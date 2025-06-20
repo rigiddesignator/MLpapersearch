@@ -1,448 +1,243 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="h-full bg-gray-50">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Academic Paper Search</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Academic Paper Search</title>
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            color: #333;
-        }
+  <!-- Inter font -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet"
+  />
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-
-        header {
-            text-align: center;
-            margin-bottom: 40px;
-            color: white;
-        }
-
-        h1 {
-            font-size: 3rem;
-            font-weight: 300;
-            margin-bottom: 10px;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
-        }
-
-        .subtitle {
-            font-size: 1.2rem;
-            opacity: 0.9;
-            font-weight: 300;
-        }
-
-        .search-container {
-            background: white;
-            border-radius: 12px;
-            padding: 30px;
-            margin-bottom: 30px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-        }
-
-        .search-bar {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-        }
-
-        .search-input {
-            flex: 1;
-            min-width: 300px;
-            padding: 15px 20px;
-            border: 2px solid #e1e5e9;
-            border-radius: 8px;
-            font-size: 16px;
-            transition: border-color 0.3s ease;
-        }
-
-        .search-input:focus {
-            outline: none;
-            border-color: #667eea;
-        }
-
-        .filters {
-            display: flex;
-            gap: 15px;
-            flex-wrap: wrap;
-        }
-
-        .filter-select {
-            padding: 12px 16px;
-            border: 2px solid #e1e5e9;
-            border-radius: 8px;
-            font-size: 14px;
-            background: white;
-            min-width: 120px;
-        }
-
-        .stats {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            color: #666;
-            font-size: 14px;
-            margin-bottom: 20px;
-        }
-
-        .results-container {
-            background: white;
-            border-radius: 12px;
-            padding: 30px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-        }
-
-        .paper-card {
-            border: 1px solid #e1e5e9;
-            border-radius: 8px;
-            padding: 25px;
-            margin-bottom: 20px;
-            transition: all 0.3s ease;
-            background: #fafbfc;
-        }
-
-        .paper-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
-            border-color: #667eea;
-        }
-
-        .paper-title {
-            font-size: 1.3rem;
-            font-weight: 600;
-            color: #2c3e50;
-            margin-bottom: 10px;
-            line-height: 1.4;
-        }
-
-        .paper-authors {
-            color: #7f8c8d;
-            margin-bottom: 8px;
-            font-size: 1rem;
-        }
-
-        .paper-meta {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 15px;
-            flex-wrap: wrap;
-        }
-
-        .conference-tag {
-            background: #667eea;
-            color: white;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            font-weight: 500;
-        }
-
-        .year-tag {
-            background: #95a5a6;
-            color: white;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 0.85rem;
-        }
-
-        .paper-abstract {
-            color: #555;
-            line-height: 1.6;
-            margin-bottom: 15px;
-        }
-
-        .paper-link {
-            color: #667eea;
-            text-decoration: none;
-            font-weight: 500;
-            font-size: 0.9rem;
-        }
-
-        .paper-link a {
-            color: #667eea;
-            text-decoration: none;
-        }
-
-        .paper-link a:hover {
-            text-decoration: underline;
-        }
-
-        .no-results {
-            text-align: center;
-            color: #7f8c8d;
-            font-size: 1.1rem;
-            padding: 40px;
-        }
-
-        .loading {
-            text-align: center;
-            color: #667eea;
-            font-size: 1.1rem;
-            padding: 40px;
-        }
-
-        @media (max-width: 768px) {
-            h1 {
-                font-size: 2rem;
-            }
-            
-            .search-bar {
-                flex-direction: column;
-            }
-            
-            .search-input {
-                min-width: auto;
-            }
-            
-            .filters {
-                justify-content: center;
-            }
-            
-            .paper-meta {
-                justify-content: center;
-            }
-        }
-    </style>
+  <!-- Tailwind via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: "#667eea",
+            accent: "#764ba2",
+          },
+          fontFamily: {
+            inter: ["Inter", "sans-serif"],
+          },
+          borderRadius: {
+            xl: "1rem",
+            "2xl": "1.5rem",
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    body { font-family: Inter, sans-serif; }
+  </style>
 </head>
-<body>
-    <div class="container">
-        <header>
-            <h1>Academic Paper Search</h1>
-            <p class="subtitle">Explore ICML, NeurIPS, and ICLR papers from 2014-2025</p>
-        </header>
+<body class="h-full">
 
-        <div class="search-container">
-            <div class="search-bar">
-                <input type="text" class="search-input" id="searchInput" placeholder="Search papers by title, author, or keywords...">
-            </div>
-            <div class="filters">
-                <select class="filter-select" id="conferenceFilter">
-                    <option value="">All Conferences</option>
-                    <option value="ICML">ICML</option>
-                    <option value="NEURIPS">NEURIPS</option>
-                    <option value="ICLR">ICLR</option>
-                </select>
-                <select class="filter-select" id="yearFilter">
-                    <option value="">All Years</option>
-                    <option value="2024">2024</option>
-                    <option value="2023">2023</option>
-                    <option value="2022">2022</option>
-                    <option value="2021">2021</option>
-                    <option value="2020">2020</option>
-                    <option value="2019">2019</option>
-                    <option value="2018">2018</option>
-                    <option value="2017">2017</option>
-                    <option value="2016">2016</option>
-                    <option value="2015">2015</option>
-                    <option value="2014">2014</option>
-                </select>
-            </div>
-        </div>
-
-        <div class="results-container">
-            <div class="stats">
-                <span id="resultsCount">Loading papers...</span>
-                <span id="totalCount"></span>
-            </div>
-            <div id="resultsContainer">
-                <div class="loading">Loading papers...</div>
-            </div>
-        </div>
+  <!-- fixed header -->
+  <header class="fixed top-0 w-full bg-white shadow z-50">
+    <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+      <h1 class="text-2xl font-semibold text-primary">Academic Paper Search</h1>
+      <div class="hidden md:flex items-center space-x-4">
+        <input
+          id="searchInput"
+          type="text"
+          placeholder="Search papers by title, author, or keywords…"
+          class="w-64 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:outline-none"
+        />
+      </div>
     </div>
+  </header>
 
-    <script>
-        let currentResults = [];
-        let allPapers = [];
-        let papersData = null;
+  <main class="pt-24 max-w-6xl mx-auto px-6 grid grid-cols-1 md:grid-cols-[240px_1fr] gap-6">
 
-        // Load papers from JSON file
-        async function loadPapers() {
-            try {
-                const response = await fetch('papers.json');
-                if (!response.ok) {
-                    throw new Error(`Failed to load papers.json: ${response.statusText}`);
-                }
-                papersData = await response.json();
-                allPapers = papersData.papers || [];
-                
-                // Populate year filter dynamically
-                populateYearFilter();
-                
-                return true;
-            } catch (error) {
-                console.error('Error loading papers:', error);
-                // Fall back to sample data for demo
-                allPapers = getSampleData();
-                return false;
-            }
+    <!-- sidebar filters -->
+    <aside class="bg-white p-6 rounded-2xl shadow">
+      <p class="text-gray-600 text-sm mb-4">Explore ICML, NeurIPS, and ICLR papers from 2014–2025</p>
+      <div class="space-y-6">
+        <div>
+          <label for="conferenceFilter" class="block mb-1 text-sm font-medium text-gray-700">
+            Conference
+          </label>
+          <select
+            id="conferenceFilter"
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:outline-none"
+          >
+            <option value="">All Conferences</option>
+            <option value="ICML">ICML</option>
+            <option value="NeurIPS">NeurIPS</option>
+            <option value="ICLR">ICLR</option>
+          </select>
+        </div>
+        <div>
+          <label for="yearFilter" class="block mb-1 text-sm font-medium text-gray-700">
+            Year
+          </label>
+          <select
+            id="yearFilter"
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:outline-none"
+          >
+            <option value="">All Years</option>
+            <!-- to be populated dynamically -->
+          </select>
+        </div>
+      </div>
+    </aside>
+
+    <!-- results -->
+    <section class="space-y-4">
+      <div class="flex justify-between items-center text-gray-600">
+        <span id="resultsCount">Loading papers…</span>
+        <span id="totalCount"></span>
+      </div>
+      <div id="resultsContainer" class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div class="col-span-full text-center text-gray-500">Loading papers…</div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    let currentResults = [];
+    let allPapers = [];
+    let papersData = null;
+
+    // Load papers from JSON file
+    async function loadPapers() {
+      try {
+        const response = await fetch('papers.json');
+        if (!response.ok) throw new Error(response.statusText);
+        papersData = await response.json();
+        allPapers = papersData.papers || [];
+        populateYearFilter();
+        return true;
+      } catch (e) {
+        console.error('Error loading papers.json, falling back to sample data:', e);
+        allPapers = getSampleData();
+        populateYearFilter();
+        return false;
+      }
+    }
+
+    function getSampleData() {
+      return [
+        {
+          title: "Attention Is All You Need",
+          authors: "Ashish Vaswani, Noam Shazeer, …",
+          year: 2017,
+          conference: "NeurIPS",
+          abstract: "We propose the Transformer…",
+          filename: "2017_vaswani_attention_is_all_you_need.pdf"
+        },
+        {
+          title: "Generative Adversarial Networks",
+          authors: "Ian Goodfellow, Jean Pouget-Abadie, …",
+          year: 2014,
+          conference: "NeurIPS",
+          abstract: "We propose a new framework…",
+          filename: "2014_goodfellow_generative_adversarial_networks.pdf"
+        },
+        {
+          title: "Adam: A Method for Stochastic Optimization",
+          authors: "Diederik P. Kingma, Jimmy Ba",
+          year: 2015,
+          conference: "ICLR",
+          abstract: "We introduce Adam, an algorithm for…",
+          filename: "2015_kingma_adam_a_method_for_stochastic_optimization.pdf"
         }
+      ];
+    }
 
-        // Sample data for demo/testing when papers.json isn't available
-        function getSampleData() {
-            return [
-                {
-                    title: "Attention Is All You Need",
-                    authors: "Ashish Vaswani, Noam Shazeer, Niki Parmar, Jakob Uszkoreit, Llion Jones, Aidan N. Gomez, Lukasz Kaiser, Illia Polosukhin",
-                    year: 2017,
-                    conference: "NeurIPS",
-                    abstract: "The dominant sequence transduction models are based on complex recurrent or convolutional neural networks that include an encoder and a decoder. The best performing models also connect the encoder and decoder through an attention mechanism. We propose a new simple network architecture, the Transformer, based solely on attention mechanisms, dispensing with recurrence and convolutions entirely.",
-                    filename: "2017_vaswani_attention_is_all_you_need.pdf"
-                },
-                {
-                    title: "Generative Adversarial Networks",
-                    authors: "Ian Goodfellow, Jean Pouget-Abadie, Mehdi Mirza, Bing Xu, David Warde-Farley, Sherjil Ozair, Aaron Courville, Yoshua Bengio",
-                    year: 2014,
-                    conference: "NeurIPS",
-                    abstract: "We propose a new framework for estimating generative models via an adversarial process, in which we simultaneously train two models: a generative model G that captures the data distribution, and a discriminative model D that estimates the probability that a sample came from the training data rather than G.",
-                    filename: "2014_goodfellow_generative_adversarial_networks.pdf"
-                },
-                {
-                    title: "Adam: A Method for Stochastic Optimization",
-                    authors: "Diederik P. Kingma, Jimmy Ba",
-                    year: 2015,
-                    conference: "ICLR",
-                    abstract: "We introduce Adam, an algorithm for first-order gradient-based optimization of stochastic objective functions, based on adaptive estimates of lower-order moments. The method is straightforward to implement, is computationally efficient, has little memory requirements, is invariant to diagonal rescaling of the gradients, and is well suited for problems that are large in terms of data and/or parameters.",
-                    filename: "2015_kingma_adam_a_method_for_stochastic_optimization.pdf"
-                }
-            ];
-        }
+    function populateYearFilter() {
+      const yearFilter = document.getElementById('yearFilter');
+      const years = [...new Set(allPapers.map(p => p.year))].sort((a,b)=>b-a);
+      yearFilter.innerHTML = '<option value="">All Years</option>';
+      years.forEach(y => {
+        yearFilter.innerHTML += `<option value="${y}">${y}</option>`;
+      });
+    }
 
-        // Populate year filter with actual years from data
-        function populateYearFilter() {
-            const yearFilter = document.getElementById('yearFilter');
-            const years = [...new Set(allPapers.map(p => p.year))].sort((a, b) => b - a);
-            
-            // Clear existing options except "All Years"
-            yearFilter.innerHTML = '<option value="">All Years</option>';
-            
-            years.forEach(year => {
-                const option = document.createElement('option');
-                option.value = year;
-                option.textContent = year;
-                yearFilter.appendChild(option);
-            });
-        }
+    async function initializeApp() {
+      const loaded = await loadPapers();
+      if (!loaded) {
+        const c = document.getElementById('resultsContainer');
+        c.innerHTML = `
+          <div class="col-span-full bg-yellow-50 border border-yellow-300 text-yellow-800 rounded-lg p-4">
+            <strong>Demo Mode:</strong> Could not load papers.json. Showing sample data.<br>
+            Place your generated papers.json file next to this HTML file.
+          </div>
+        `;
+      }
+      currentResults = allPapers;
+      renderResults();
+      updateStats();
 
-        // Initialize the app
-        async function initializeApp() {
-            const loaded = await loadPapers();
-            
-            if (!loaded) {
-                // Show warning that we're using sample data
-                const container = document.getElementById('resultsContainer');
-                container.innerHTML = `
-                    <div style="background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 8px; padding: 15px; margin-bottom: 20px; color: #856404;">
-                        <strong>Demo Mode:</strong> Could not load papers.json. Showing sample data. 
-                        Place your generated papers.json file in the same directory as this HTML file.
-                    </div>
-                    <div class="loading">Loading sample papers...</div>
-                `;
-            }
-            
-            currentResults = allPapers;
-            renderResults();
-            updateStats();
-            
-            // Add event listeners
-            document.getElementById('searchInput').addEventListener('input', handleSearch);
-            document.getElementById('conferenceFilter').addEventListener('change', handleSearch);
-            document.getElementById('yearFilter').addEventListener('change', handleSearch);
-        }
+      document.getElementById('searchInput').addEventListener('input', handleSearch);
+      document.getElementById('conferenceFilter').addEventListener('change', handleSearch);
+      document.getElementById('yearFilter').addEventListener('change', handleSearch);
+    }
 
-        // Search and filter function
-        function handleSearch() {
-            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-            const conferenceFilter = document.getElementById('conferenceFilter').value;
-            const yearFilter = document.getElementById('yearFilter').value;
+    function handleSearch() {
+      const term = document.getElementById('searchInput').value.toLowerCase();
+      const conf = document.getElementById('conferenceFilter').value;
+      const year = document.getElementById('yearFilter').value;
 
-            currentResults = allPapers.filter(paper => {
-                // Text search in title, authors, abstract, and full text
-                const textMatch = !searchTerm || 
-                    paper.title.toLowerCase().includes(searchTerm) ||
-                    paper.authors.toLowerCase().includes(searchTerm) ||
-                    (paper.abstract && paper.abstract.toLowerCase().includes(searchTerm)) ||
-                    (paper.fulltext && paper.fulltext.toLowerCase().includes(searchTerm));
+      currentResults = allPapers.filter(p => {
+        const textMatch = !term ||
+          p.title.toLowerCase().includes(term) ||
+          p.authors.toLowerCase().includes(term) ||
+          (p.abstract && p.abstract.toLowerCase().includes(term)) ||
+          (p.fulltext && p.fulltext.toLowerCase().includes(term));
+        const confMatch = !conf || p.conference === conf;
+        const yearMatch = !year || p.year.toString() === year;
+        return textMatch && confMatch && yearMatch;
+      });
 
-                // Conference filter
-                const conferenceMatch = !conferenceFilter || paper.conference === conferenceFilter;
+      renderResults();
+      updateStats();
+    }
 
-                // Year filter  
-                const yearMatch = !yearFilter || paper.year.toString() === yearFilter;
+    function renderResults() {
+      const c = document.getElementById('resultsContainer');
+      if (currentResults.length === 0) {
+        c.innerHTML = `<div class="col-span-full text-center text-gray-500">No papers found.</div>`;
+        return;
+      }
+      c.innerHTML = currentResults.map(p => {
+        const abs = p.abstract?.trim() || "Abstract not available.";
+        const link = p.filepath
+          ? `<a href="${p.filepath}" target="_blank">${p.filename}</a>`
+          : p.filename;
+        return `
+          <div class="bg-white rounded-2xl p-6 shadow hover:shadow-lg transition">
+            <h3 class="text-xl font-semibold text-gray-800 mb-2">${p.title}</h3>
+            <p class="text-sm text-gray-600 mb-3">${p.authors}</p>
+            <div class="flex flex-wrap gap-2 mb-4">
+              <span class="px-3 py-1 bg-primary/10 text-primary rounded-full text-xs font-medium">${p.conference}</span>
+              <span class="px-3 py-1 bg-gray-200 text-gray-700 rounded-full text-xs">${p.year}</span>
+            </div>
+            <p class="text-gray-700 text-sm mb-4 leading-relaxed">${abs}</p>
+            <div class="text-sm">
+              📄 <a class="text-primary font-medium hover:underline" href="#" target="_blank">${link}</a>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
 
-                return textMatch && conferenceMatch && yearMatch;
-            });
+    function updateStats() {
+      document.getElementById('resultsCount').textContent = `Showing ${currentResults.length} papers`;
+      document.getElementById('totalCount').textContent = `of ${allPapers.length} total`;
+      if (papersData?.summary) {
+        const sub = `${Object.keys(papersData.summary.conferences).join(', ')} papers from ${Math.min(...Object.keys(papersData.summary.years))}-${Math.max(...Object.keys(papersData.summary.years))} (${papersData.summary.total_papers} total)`;
+        document.querySelector('aside p').textContent = sub;
+      }
+    }
 
-            renderResults();
-            updateStats();
-        }
-
-        // Render search results
-        function renderResults() {
-            const container = document.getElementById('resultsContainer');
-            
-            if (currentResults.length === 0) {
-                container.innerHTML = '<div class="no-results">No papers found. Try adjusting your search terms or filters.</div>';
-                return;
-            }
-
-            container.innerHTML = currentResults.map(paper => {
-                // Handle missing or empty abstracts
-                const abstract = paper.abstract && paper.abstract.trim() 
-                    ? paper.abstract 
-                    : "Abstract not available or could not be extracted.";
-                
-                // Create link to actual file if filepath exists, otherwise just show filename
-                const fileLink = paper.filepath 
-                    ? `📄 <a href="${paper.filepath}" target="_blank">${paper.filename}</a>`
-                    : `📄 ${paper.filename}`;
-
-                return `
-                    <div class="paper-card">
-                        <div class="paper-title">${paper.title}</div>
-                        <div class="paper-authors">${paper.authors}</div>
-                        <div class="paper-meta">
-                            <span class="conference-tag">${paper.conference}</span>
-                            <span class="year-tag">${paper.year}</span>
-                        </div>
-                        <div class="paper-abstract">${abstract}</div>
-                        <div class="paper-link">${fileLink}</div>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        // Update statistics
-        function updateStats() {
-            const resultsCount = document.getElementById('resultsCount');
-            const totalCount = document.getElementById('totalCount');
-            
-            resultsCount.textContent = `Showing ${currentResults.length} papers`;
-            totalCount.textContent = `of ${allPapers.length} total`;
-
-            // Update subtitle with actual stats if we have real data
-            if (papersData && papersData.summary) {
-                const subtitle = document.querySelector('.subtitle');
-                const conferences = Object.keys(papersData.summary.conferences).join(', ');
-                const years = Object.keys(papersData.summary.years);
-                const yearRange = years.length > 0 ? `${Math.min(...years)}-${Math.max(...years)}` : '';
-                subtitle.textContent = `${conferences} papers from ${yearRange} (${papersData.summary.total_papers} total)`;
-            }
-        }
-
-        // Start the app when page loads
-        document.addEventListener('DOMContentLoaded', initializeApp);
-    </script>
+    document.addEventListener('DOMContentLoaded', initializeApp);
+  </script>
 </body>
 </html>
