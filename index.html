@@ -1,121 +1,239 @@
 <!DOCTYPE html>
-<html lang="en" class="h-full bg-gray-50">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Academic Paper Search</title>
-
-  <!-- Inter font -->
-  <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
-    rel="stylesheet"
-  />
-
-  <!-- Tailwind via CDN -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            primary: "#667eea",
-            accent: "#764ba2",
-          },
-          fontFamily: {
-            inter: ["Inter", "sans-serif"],
-          },
-          borderRadius: {
-            xl: "1rem",
-            "2xl": "1.5rem",
-          },
-        },
-      },
-    };
-  </script>
   <style>
-    body { font-family: Inter, sans-serif; }
+    :root {
+      --bg: #f5f5f5;
+      --card-bg: #ffffff;
+      --text: #333333;
+      --subtle: #666666;
+      --border: #dddddd;
+    }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
+        Ubuntu, Cantarell, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+    header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      background: var(--card-bg);
+      border-bottom: 1px solid var(--border);
+      padding: 16px 20px;
+      z-index: 100;
+    }
+    header h1 {
+      font-size: 1.5rem;
+      font-weight: 500;
+      color: var(--text);
+    }
+    .container {
+      display: grid;
+      grid-template-columns: 250px 1fr;
+      gap: 20px;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 100px 20px 20px;
+    }
+    /* Sidebar */
+    aside {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 20px;
+    }
+    aside p {
+      color: var(--subtle);
+      font-size: 0.9rem;
+      margin-bottom: 16px;
+    }
+    .filter-group {
+      margin-bottom: 20px;
+    }
+    .filter-group label {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 0.85rem;
+      color: var(--text);
+    }
+    .filter-group select,
+    .filter-group input {
+      width: 100%;
+      padding: 8px 10px;
+      font-size: 0.9rem;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--text);
+      background: #fff;
+    }
+    /* Results */
+    section {
+      display: flex;
+      flex-direction: column;
+    }
+    .stats {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: var(--subtle);
+      font-size: 0.9rem;
+      margin-bottom: 12px;
+    }
+    #resultsContainer {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 20px;
+    }
+    .paper-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 20px;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    .paper-card:hover {
+      border-color: #bbbbbb;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+    .paper-title {
+      font-size: 1.1rem;
+      margin-bottom: 8px;
+      color: var(--text);
+      line-height: 1.3;
+    }
+    .paper-authors {
+      font-size: 0.9rem;
+      color: var(--subtle);
+      margin-bottom: 10px;
+    }
+    .paper-meta {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+    .tag {
+      background: #eeeeee;
+      color: var(--subtle);
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 0.75rem;
+    }
+    .paper-abstract {
+      font-size: 0.9rem;
+      color: var(--text);
+      line-height: 1.4;
+      margin-bottom: 12px;
+    }
+    .paper-link a {
+      font-size: 0.85rem;
+      color: var(--text);
+      text-decoration: none;
+      border: 1px solid var(--border);
+      padding: 4px 8px;
+      border-radius: 4px;
+      transition: background 0.2s ease;
+    }
+    .paper-link a:hover {
+      background: #f0f0f0;
+    }
+    .no-results,
+    .loading {
+      grid-column: 1 / -1;
+      text-align: center;
+      color: var(--subtle);
+      font-size: 1rem;
+      padding: 40px 0;
+    }
+    @media (max-width: 768px) {
+      .container {
+        grid-template-columns: 1fr;
+        padding-top: 140px;
+      }
+      header h1 {
+        text-align: center;
+      }
+    }
   </style>
 </head>
-<body class="h-full">
-
-  <!-- fixed header -->
-  <header class="fixed top-0 w-full bg-white shadow z-50">
-    <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
-      <h1 class="text-2xl font-semibold text-primary">Academic Paper Search</h1>
-      <div class="hidden md:flex items-center space-x-4">
-        <input
-          id="searchInput"
-          type="text"
-          placeholder="Search papers by title, author, or keywords…"
-          class="w-64 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:outline-none"
-        />
-      </div>
-    </div>
+<body>
+  <header>
+    <h1>Academic Paper Search</h1>
   </header>
 
-  <main class="pt-24 max-w-6xl mx-auto px-6 grid grid-cols-1 md:grid-cols-[240px_1fr] gap-6">
+  <div class="container">
+    <aside>
+      <p class="subtitle">Explore ICML, NeurIPS, and ICLR papers from 2014–2025</p>
 
-    <!-- sidebar filters -->
-    <aside class="bg-white p-6 rounded-2xl shadow">
-      <p class="text-gray-600 text-sm mb-4">Explore ICML, NeurIPS, and ICLR papers from 2014–2025</p>
-      <div class="space-y-6">
-        <div>
-          <label for="conferenceFilter" class="block mb-1 text-sm font-medium text-gray-700">
-            Conference
-          </label>
-          <select
-            id="conferenceFilter"
-            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:outline-none"
-          >
-            <option value="">All Conferences</option>
-            <option value="ICML">ICML</option>
-            <option value="NeurIPS">NeurIPS</option>
-            <option value="ICLR">ICLR</option>
-          </select>
-        </div>
-        <div>
-          <label for="yearFilter" class="block mb-1 text-sm font-medium text-gray-700">
-            Year
-          </label>
-          <select
-            id="yearFilter"
-            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:outline-none"
-          >
-            <option value="">All Years</option>
-            <!-- to be populated dynamically -->
-          </select>
-        </div>
+      <div class="filter-group">
+        <label for="searchInput">Search</label>
+        <input
+          type="text"
+          id="searchInput"
+          placeholder="Title, author, keywords…"
+        />
+      </div>
+
+      <div class="filter-group">
+        <label for="conferenceFilter">Conference</label>
+        <select id="conferenceFilter">
+          <option value="">All Conferences</option>
+          <option value="ICML">ICML</option>
+          <option value="NeurIPS">NeurIPS</option>
+          <option value="ICLR">ICLR</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label for="yearFilter">Year</label>
+        <select id="yearFilter">
+          <option value="">All Years</option>
+          <!-- populated dynamically -->
+        </select>
       </div>
     </aside>
 
-    <!-- results -->
-    <section class="space-y-4">
-      <div class="flex justify-between items-center text-gray-600">
+    <section>
+      <div class="stats">
         <span id="resultsCount">Loading papers…</span>
         <span id="totalCount"></span>
       </div>
-      <div id="resultsContainer" class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        <div class="col-span-full text-center text-gray-500">Loading papers…</div>
+      <div id="resultsContainer">
+        <div class="loading">Loading papers…</div>
       </div>
     </section>
-  </main>
+  </div>
 
   <script>
+    /* — your entire original JS goes here, verbatim — */
     let currentResults = [];
     let allPapers = [];
     let papersData = null;
 
-    // Load papers from JSON file
     async function loadPapers() {
       try {
         const response = await fetch('papers.json');
-        if (!response.ok) throw new Error(response.statusText);
+        if (!response.ok) {
+          throw new Error(`Failed to load papers.json: ${response.statusText}`);
+        }
         papersData = await response.json();
         allPapers = papersData.papers || [];
         populateYearFilter();
         return true;
-      } catch (e) {
-        console.error('Error loading papers.json, falling back to sample data:', e);
+      } catch (error) {
+        console.error('Error loading papers:', error);
         allPapers = getSampleData();
         populateYearFilter();
         return false;
@@ -126,18 +244,18 @@
       return [
         {
           title: "Attention Is All You Need",
-          authors: "Ashish Vaswani, Noam Shazeer, …",
+          authors: "Ashish Vaswani, Noam Shazeer, Niki Parmar, Jakob Uszkoreit, Llion Jones, Aidan N. Gomez, Lukasz Kaiser, Illia Polosukhin",
           year: 2017,
           conference: "NeurIPS",
-          abstract: "We propose the Transformer…",
+          abstract: "The dominant sequence transduction models are based on complex recurrent or convolutional neural networks that include an encoder and a decoder. The best performing models also connect the encoder and decoder through an attention mechanism. We propose a new simple network architecture, the Transformer, based solely on attention mechanisms, dispensing with recurrence and convolutions entirely.",
           filename: "2017_vaswani_attention_is_all_you_need.pdf"
         },
         {
           title: "Generative Adversarial Networks",
-          authors: "Ian Goodfellow, Jean Pouget-Abadie, …",
+          authors: "Ian Goodfellow, Jean Pouget-Abadie, Mehdi Mirza, Bing Xu, David Warde-Farley, Sherjil Ozair, Aaron Courville, Yoshua Bengio",
           year: 2014,
           conference: "NeurIPS",
-          abstract: "We propose a new framework…",
+          abstract: "We propose a new framework for estimating generative models via an adversarial process, in which we simultaneously train two models: a generative model G that captures the data distribution, and a discriminative model D that estimates the probability that a sample came from the training data rather than G.",
           filename: "2014_goodfellow_generative_adversarial_networks.pdf"
         },
         {
@@ -145,36 +263,34 @@
           authors: "Diederik P. Kingma, Jimmy Ba",
           year: 2015,
           conference: "ICLR",
-          abstract: "We introduce Adam, an algorithm for…",
+          abstract: "We introduce Adam, an algorithm for first-order gradient-based optimization of stochastic objective functions, based on adaptive estimates of lower-order moments. The method is straightforward to implement, is computationally efficient, has little memory requirements, is invariant to diagonal rescaling of the gradients, and is well suited for problems that are large in terms of data and/or parameters.",
           filename: "2015_kingma_adam_a_method_for_stochastic_optimization.pdf"
         }
       ];
     }
 
     function populateYearFilter() {
-      const yearFilter = document.getElementById('yearFilter');
+      const yf = document.getElementById('yearFilter');
       const years = [...new Set(allPapers.map(p => p.year))].sort((a,b)=>b-a);
-      yearFilter.innerHTML = '<option value="">All Years</option>';
+      yf.innerHTML = '<option value="">All Years</option>';
       years.forEach(y => {
-        yearFilter.innerHTML += `<option value="${y}">${y}</option>`;
+        const opt = document.createElement('option');
+        opt.value = y; opt.textContent = y;
+        yf.appendChild(opt);
       });
     }
 
     async function initializeApp() {
       const loaded = await loadPapers();
       if (!loaded) {
-        const c = document.getElementById('resultsContainer');
-        c.innerHTML = `
+        document.getElementById('resultsContainer').innerHTML = `
           <div class="col-span-full bg-yellow-50 border border-yellow-300 text-yellow-800 rounded-lg p-4">
-            <strong>Demo Mode:</strong> Could not load papers.json. Showing sample data.<br>
-            Place your generated papers.json file next to this HTML file.
-          </div>
-        `;
+            <strong>Demo Mode:</strong> Could not load papers.json. Showing sample data.
+          </div>`;
       }
       currentResults = allPapers;
       renderResults();
       updateStats();
-
       document.getElementById('searchInput').addEventListener('input', handleSearch);
       document.getElementById('conferenceFilter').addEventListener('change', handleSearch);
       document.getElementById('yearFilter').addEventListener('change', handleSearch);
@@ -184,7 +300,6 @@
       const term = document.getElementById('searchInput').value.toLowerCase();
       const conf = document.getElementById('conferenceFilter').value;
       const year = document.getElementById('yearFilter').value;
-
       currentResults = allPapers.filter(p => {
         const textMatch = !term ||
           p.title.toLowerCase().includes(term) ||
@@ -195,7 +310,6 @@
         const yearMatch = !year || p.year.toString() === year;
         return textMatch && confMatch && yearMatch;
       });
-
       renderResults();
       updateStats();
     }
@@ -203,7 +317,7 @@
     function renderResults() {
       const c = document.getElementById('resultsContainer');
       if (currentResults.length === 0) {
-        c.innerHTML = `<div class="col-span-full text-center text-gray-500">No papers found.</div>`;
+        c.innerHTML = `<div class="no-results">No papers found.</div>`;
         return;
       }
       c.innerHTML = currentResults.map(p => {
@@ -212,19 +326,16 @@
           ? `<a href="${p.filepath}" target="_blank">${p.filename}</a>`
           : p.filename;
         return `
-          <div class="bg-white rounded-2xl p-6 shadow hover:shadow-lg transition">
-            <h3 class="text-xl font-semibold text-gray-800 mb-2">${p.title}</h3>
-            <p class="text-sm text-gray-600 mb-3">${p.authors}</p>
-            <div class="flex flex-wrap gap-2 mb-4">
-              <span class="px-3 py-1 bg-primary/10 text-primary rounded-full text-xs font-medium">${p.conference}</span>
-              <span class="px-3 py-1 bg-gray-200 text-gray-700 rounded-full text-xs">${p.year}</span>
+          <div class="paper-card">
+            <div class="paper-title">${p.title}</div>
+            <div class="paper-authors">${p.authors}</div>
+            <div class="paper-meta">
+              <span class="tag">${p.conference}</span>
+              <span class="tag">${p.year}</span>
             </div>
-            <p class="text-gray-700 text-sm mb-4 leading-relaxed">${abs}</p>
-            <div class="text-sm">
-              📄 <a class="text-primary font-medium hover:underline" href="#" target="_blank">${link}</a>
-            </div>
-          </div>
-        `;
+            <div class="paper-abstract">${abs}</div>
+            <div class="paper-link">📄 ${link}</div>
+          </div>`;
       }).join('');
     }
 
@@ -232,8 +343,11 @@
       document.getElementById('resultsCount').textContent = `Showing ${currentResults.length} papers`;
       document.getElementById('totalCount').textContent = `of ${allPapers.length} total`;
       if (papersData?.summary) {
-        const sub = `${Object.keys(papersData.summary.conferences).join(', ')} papers from ${Math.min(...Object.keys(papersData.summary.years))}-${Math.max(...Object.keys(papersData.summary.years))} (${papersData.summary.total_papers} total)`;
-        document.querySelector('aside p').textContent = sub;
+        const sub = `${Object.keys(papersData.summary.conferences).join(', ')} papers from `
+          + `${Math.min(...Object.keys(papersData.summary.years))}-`
+          + `${Math.max(...Object.keys(papersData.summary.years))}`
+          + ` (${papersData.summary.total_papers} total)`;
+        document.querySelector('.subtitle').textContent = sub;
       }
     }
 
